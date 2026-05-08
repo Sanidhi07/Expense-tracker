@@ -6,7 +6,7 @@ interface ExpenseCardProps{
 
 export const ExpenseCard=({expense}:ExpenseCardProps)=>{
     return 
-    <div className='expense-card'>
+    <div className=''>
       <h3>{expense.title}</h3>
       <p>Amount: ₹{expense.amount}</p>
       <p>Category: <strong>{expense.category}</strong></p>
