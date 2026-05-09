@@ -2,5 +2,3 @@
 
 @source "../index.html";
 @source "./**/*.{js,ts,jsx,tsx}";
-
-/* This is the new v4 way to do the 'content' list */

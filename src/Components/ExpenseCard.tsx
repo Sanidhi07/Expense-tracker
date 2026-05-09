@@ -6,7 +6,7 @@ interface ExpenseCardProps{
 
 export const ExpenseCard=({expense}:ExpenseCardProps)=>{
     return (
-    <div className='bg-white shadow-md p-4 mb-4 rounded-xl flex justify-between items-center'>
+    <div className='bg-white shadow-md p-4 mb-4 rounded-xl flex justify-between items-center transition delay-75 duration-150 ease-in-out hover:-translate-y-0.5 hover:scale-100 hover:bg-blue-100'>
         <div>
       <h3 className='text-lg font-bold text-slate-800 '>{expense.title}</h3>
             <p className='text-sm text-slate-500'>Category: <strong>{expense.category}</strong></p>
