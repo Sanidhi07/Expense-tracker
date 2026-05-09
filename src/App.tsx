@@ -1,10 +1,10 @@
-
+import { useState } from 'react'
 import { ExpenseCard } from './components/ExpenseCard'
 import type { Expense } from './type'
 
 function App() {
   
-  const expenses:Expense[]=[
+  const [expenses,setExpenses]=useState<Expense[]>([
     {
       id:1,
       title:"Cheese",
@@ -23,8 +23,12 @@ function App() {
      amount:30000,
      category:"Travel"
     }
-  ]
+  ])
+ function deleteExpense(id:number){
+  const newExpense=expenses.filter((item)=>(item.id)!== id)
+  setExpenses(newExpense)
 
+ }
   return (
   /* Added w-full to ensure it takes up the whole width */
   <div className='min-h-screen w-full bg-slate-900 p-10 flex flex-col items-center'>
@@ -37,7 +41,7 @@ function App() {
 
       <div className="space-y-4 bg-purple-300 rounded-xl">
         {expenses.map((item) => (
-          <ExpenseCard key={item.id} expense={item}/>
+          <ExpenseCard key={item.id} expense={item} onDelete={deleteExpense}/>
         ))}
       </div>
 
