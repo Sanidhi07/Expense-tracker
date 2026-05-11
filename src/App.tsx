@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ExpenseCard } from './components/ExpenseCard'
+import ExpenseForm from './components/ExpenseForm'
 import type { Expense } from './type'
 
 function App() {
@@ -29,6 +30,11 @@ function App() {
   setExpenses(newExpense)
 
  }
+
+ function addExpense(newExpense:Expense){
+  setExpenses([newExpense,...expenses])
+
+ }
   return (
   /* Added w-full to ensure it takes up the whole width */
   <div className='min-h-screen w-full bg-slate-900 p-10 flex flex-col items-center'>
@@ -38,12 +44,14 @@ function App() {
       <h1 className='text-4xl font-black text-purple-300 mb-10 text-center tracking-tight'>
         My Expenses
       </h1>
+      <ExpenseForm onAdd={addExpense}></ExpenseForm>
 
       <div className="space-y-4 bg-purple-300 rounded-xl">
         {expenses.map((item) => (
           <ExpenseCard key={item.id} expense={item} onDelete={deleteExpense}/>
         ))}
       </div>
+      {expenses.length === 0 && <p className="text-slate-400">No expenses yet. Add one above!</p>}
 
     </div>
   </div>
