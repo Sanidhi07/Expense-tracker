@@ -6,8 +6,15 @@ interface ExpenseFormProps{
 }
 
 function ExpenseForm({onAdd}:ExpenseFormProps){
-  const [form,setForm]=useState({title:'',amount:0,category:'Food'});
-
+const [form, setForm] = useState<{
+  title: string;
+  amount: number | '';
+  category: string;
+}>({
+  title: '',
+  amount: '', 
+  category: 'Food'
+});
   type ChangeEvent=React.ChangeEvent<HTMLInputElement|HTMLSelectElement>
 
   const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
