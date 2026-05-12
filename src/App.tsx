@@ -47,6 +47,13 @@ async function addExpense(newExpense:Expense){
   else setExpenses(expenses.filter((item)=>(item.id)!== id))
 
  }
+ if (loading) {
+  return (
+    <div className='min-h-screen w-full bg-slate-900 flex items-center justify-center'>
+      <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500'></div>
+    </div>
+  )
+}
 
  const totalAmount=expenses.reduce((sum,item)=> sum + item.amount,0)
   return (
