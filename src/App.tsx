@@ -35,6 +35,8 @@ function App() {
   setExpenses([newExpense,...expenses])
 
  }
+
+ const totalAmount=expenses.reduce((sum,item)=> sum + item.amount,0)
   return (
   /* Added w-full to ensure it takes up the whole width */
   <div className='min-h-screen w-full bg-slate-900 p-10 flex flex-col items-center'>
@@ -52,6 +54,11 @@ function App() {
         ))}
       </div>
       {expenses.length === 0 && <p className="text-slate-400">No expenses yet. Add one above!</p>}
+
+      <div className='mt-8 p-4 bg-purple-600/30 rounded-xl border border-purple-500/50 text-center'>
+        <p className='text-purple-200 text-sm uppercase tracking-widest font-bold'>Total Amount</p>
+        <p className='text-3xl font-black text-white mt-1'>{totalAmount}</p>
+      </div>
 
     </div>
   </div>
