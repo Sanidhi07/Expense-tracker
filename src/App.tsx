@@ -1,38 +1,50 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { supabase } from './supabase'
 import { ExpenseCard } from './components/ExpenseCard'
 import ExpenseForm from './components/ExpenseForm'
 import type { Expense } from './type'
 
 function App() {
   
-  const [expenses,setExpenses]=useState<Expense[]>([
-    {
-      id:1,
-      title:"Cheese",
-      amount:100,
-      category:"Food"
-    },
-    {
-      id:2,
-      title:"light bill",
-      amount:1500,
-      category:"Bills"
-    },
-    {
-     id:3,
-     title:"Hong-Kong",
-     amount:30000,
-     category:"Travel"
-    }
-  ])
- function deleteExpense(id:number){
-  const newExpense=expenses.filter((item)=>(item.id)!== id)
-  setExpenses(newExpense)
+  const [expenses,setExpenses]=useState<Expense[]>([])
+  const [loading,setLoading]=useState(true)
 
- }
+  //FETCH DATA (READ)
+  useEffect(()=>{
+    const fetchExpenses=async ()=>{
+      const {data,error}=await supabase
+      .from('expenses')
+      .select('*')
+      .order('created_at',{ascending:false});
+      
+      if(error) console.error('Error fetching:',error);
+      else setExpenses(data||[]);
+      setLoading(false);
+    };
+    fetchExpenses();
+  },[]);
 
- function addExpense(newExpense:Expense){
-  setExpenses([newExpense,...expenses])
+//ADD DATA
+async function addExpense(newExpense:Expense){
+  const{data,error}=await supabase
+  .from('expenses')
+  .insert([{
+    title: newExpense.title,
+    amount: newExpense.amount,
+    category: newExpense.category
+  }]).select();
+  if(error)console.error("Error adding",error);
+  else if(data)setExpenses([data[0],...expenses]);
+}
+//DELETE DATA
+ async function deleteExpense(id:number){
+  const {error}=await supabase
+  .from('expenses')
+  .delete()
+  .eq('id',id);
+
+  if(error)console.error("Error deleting",error);
+  else setExpenses(expenses.filter((item)=>(item.id)!== id))
 
  }
 
@@ -57,7 +69,7 @@ function App() {
 
       <div className='mt-8 p-4 bg-purple-600/30 rounded-xl border border-purple-500/50 text-center'>
         <p className='text-purple-200 text-sm uppercase tracking-widest font-bold'>Total Amount</p>
-        <p className='text-3xl font-black text-white mt-1'>{totalAmount}</p>
+        <p className='text-3xl font-black text-white mt-1'>{totalAmount.toLocaleString('en-IN')}</p>
       </div>
 
     </div>

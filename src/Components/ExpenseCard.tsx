@@ -14,7 +14,7 @@ export const ExpenseCard=({expense,onDelete}:ExpenseCardProps)=>{
       
       </div>
       <div className='text-right'>
-        <p className='font-semibold text-green-600'>Amount: ₹{expense.amount}</p>
+        <p className='font-semibold text-green-600'>Amount: ₹{expense.amount.toLocaleString('en-IN')}</p>
        
        <button onClick={() => onDelete(expense.id)} 
                className="text-red-500 text-xs font-bold hover:text-red-700 mt-2 ml-2">
