@@ -3,6 +3,7 @@ import { supabase } from './supabase'
 import { ExpenseCard } from './components/ExpenseCard'
 import ExpenseForm from './components/ExpenseForm'
 import type { Expense } from './type'
+import {motion, AnimatePresence} from "framer-motion"
 
 function App() {
   
@@ -67,10 +68,23 @@ async function addExpense(newExpense:Expense){
       </h1>
       <ExpenseForm onAdd={addExpense}></ExpenseForm>
 
-      <div className="space-y-4 bg-purple-300 rounded-xl">
-        {expenses.map((item) => (
-          <ExpenseCard key={item.id} expense={item} onDelete={deleteExpense}/>
+      <div className="space-y-4 bg-purple-300 rounded-xl p-4">
+        <AnimatePresence>
+         
+        {expenses.map((item,index) => (
+          <motion.div
+          key={item.id}
+          initial={{opacity:0 , x: -20}}
+          animate={{opacity:1, x: 0}}
+          exit={{opacity: 0, scale:0.8}}
+          transition={{duration: 0.4, delay: index * 0.1, ease:"easeOut"}}
+          whileHover={{scale: 1.02}}
+          whileTap={{scale: 0.98}}>
+          
+          <ExpenseCard expense={item} onDelete={deleteExpense}/>
+          </motion.div>
         ))}
+        </AnimatePresence>
       </div>
       {expenses.length === 0 && <p className="text-slate-400">No expenses yet. Add one above!</p>}
 
