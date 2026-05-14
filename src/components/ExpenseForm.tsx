@@ -23,7 +23,7 @@ const [form, setForm] = useState<{
       ...form,
       id: Date.now(), // Generate a unique ID
     } as Expense);
-    setForm({ title: '', amount: 0, category: 'Food' });
+    setForm({ title: '', amount: '', category: 'Food' });
   }
 
   const handleChange=(e: ChangeEvent)=>{
