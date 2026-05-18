@@ -4,26 +4,49 @@ import { ExpenseCard } from './components/ExpenseCard'
 import ExpenseForm from './components/ExpenseForm'
 import type { Expense } from './type'
 import {motion, AnimatePresence} from "framer-motion"
+import LoginForm from './components/LoginForm'
 
 function App() {
-  
+  const [session, setSession] = useState<any>(null);
   const [expenses,setExpenses]=useState<Expense[]>([])
   const [loading,setLoading]=useState(true)
 
-  //FETCH DATA (READ)
-  useEffect(()=>{
-    const fetchExpenses=async ()=>{
-      const {data,error}=await supabase
-      .from('expenses')
-      .select('*')
-      .order('created_at',{ascending:false});
-      
-      if(error) console.error('Error fetching:',error);
-      else setExpenses(data||[]);
+ 
+  useEffect(() => {
+    // 1. Check if there is already a logged-in user when the page loads
+    const getInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
       setLoading(false);
     };
-    fetchExpenses();
-  },[]);
+
+    getInitialSession();
+
+    // 2. Listen for changes (like when you click 'Sign In' in the other component)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // FETCH DATA whenever the session changes (i.e., when you log in)
+  useEffect(() => {
+    if (session) {
+      const fetchExpenses = async () => {
+        const { data, error } = await supabase
+          .from('expenses')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) console.error('Error fetching:', error);
+        else setExpenses(data || []);
+      };
+      fetchExpenses();
+    }
+  }, [session]); // This triggers as soon as session is not null!
 
 //ADD DATA
 async function addExpense(newExpense:Expense){
@@ -56,12 +79,26 @@ async function addExpense(newExpense:Expense){
   )
 }
 
+if (!session) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-slate-900 p-4">
+        <LoginForm /> 
+      </div>
+    );
+  }
+
  const totalAmount=expenses.reduce((sum,item)=> sum + item.amount,0)
   return (
   /* Added w-full to ensure it takes up the whole width */
   <div className='min-h-screen w-full bg-slate-900 p-10 flex flex-col items-center'>
     
     <div className='w-full max-w-md '> 
+      <button 
+  onClick={() => supabase.auth.signOut()}
+  className="absolute top-5 right-5 text-xs font-bold uppercase tracking-widest text-purple-400 hover:text-white transition-colors"
+>
+  Logout
+</button>
       
       <h1 className='text-4xl font-black text-purple-300 mb-10 text-center tracking-tight'>
         My Expenses

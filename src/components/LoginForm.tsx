@@ -1,53 +1,115 @@
-import {useState} from 'react';
+import { useState } from "react";
+import { supabase } from "../supabase";
 
-export default function LoginForm(){
-  const [isNewUser,setIsNewUser]=useState(false)
+export default function LoginForm() {
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [email,setEmail]=useState("");
-  const [password,setPassword]=useState("")
-
-  const handleSubmit=(e: React.FormEvent)=>{
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     if(isNewUser){
-      console.log("Registering a BRAND NEW user with:",{email,password});
-      console.log("Logging in an EXISTING user with:",{email,password});
-    }
-  }
+      const {error}=await supabase.auth.signUp({
+        email: email,
+        password: password
+      });
 
-  return(
-    <div className="w-full max-w-md p-8 bg-white border border-gray-200 rounded-2xl shadow-sm">
-      <div className="mb-6 text-center">
-        <h2 className="text-2xl font-bold text-gray-900">{isNewUser ? "Create an Account" : "Welcome Back"}</h2>
-        <p className="text-sm text-gray-500 mt-1">{isNewUser ? "Enter your details to start tracking your expenses" : "Please enter your details to sign in"}</p>
+      if(error){
+        alert(error.message);
+      }else {
+        alert("Account created! You can now sign in.");
+        setIsNewUser(false);
+      }
+    }else{
+      const {error}=await supabase.auth.signInWithPassword({
+        email: email,
+        password:password,
+      });
+      if(error){
+        alert(error.message)
+      }
+    }
+
+    setLoading(false);
+  };
+
+  return (
+    <div className="w-full max-w-md p-8 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl">
+      {/* Dynamic Heading */}
+      <div className="mb-8 text-center">
+        <h2 className="text-3xl font-black text-purple-300 tracking-tight">
+          {isNewUser ? "Join Us" : "Welcome Back"}
+        </h2>
+        <p className="text-sm text-slate-400 mt-2">
+          {isNewUser 
+            ? "Start tracking your expenses today" 
+            : "Sign in to manage your budget"
+          }
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Email*/}
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Email Address</label>
-          <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder='name@example.com' className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 text-sm text-gray-900" required/>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Email Input */}
+        <div className="flex flex-col gap-2">
+          <label className="text-xs font-bold uppercase tracking-widest text-purple-400/70">
+            Email Address
+          </label>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl focus:outline-none focus:border-purple-500 text-sm text-white placeholder:text-slate-600 transition-all"
+            placeholder="name@example.com"
+          />
         </div>
 
-        {/*Password*/}
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Password</label>
-          <input type='password' value={password} onChange={(e)=> setPassword(e.target.value)} placeholder='........' className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-gray-900 text-sm text-gray-900" required/>
+        {/* Password Input */}
+        <div className="flex flex-col gap-2">
+          <label className="text-xs font-bold uppercase tracking-widest text-purple-400/70">
+            Password
+          </label>
+          <input
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl focus:outline-none focus:border-purple-500 text-sm text-white placeholder:text-slate-600 transition-all"
+            placeholder="••••••••"
+          />
         </div>
 
-        {/*Dynamic Submit Button*/}
-        <button type='submit' className='w-full mt-2 py-2.5 px-4 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-xl transition-colors text-sm shadow-sm'>{isNewUser ? "Sign Up" : "Sign In"}</button>
-       
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full mt-4 py-3 px-4 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-purple-500/20 active:scale-95"
+        >
+          {loading ? (
+    <div className="flex items-center justify-center gap-2">
+      <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+      <span>Processing...</span>
+    </div>
+  ) : (
+    isNewUser ? "Create Account" : "Sign In"
+  )}
+        </button>
       </form>
 
-      {/*Toggle Button to switch views */}
-      <div className='mt-6 text-center text-sm text-gray-500'>
-        {isNewUser ? "Already have an account" : "New to the tracker?"}
-        <button type="button" onClick={()=> setIsNewUser(!isNewUser)} className='text-gray-950 font-medium underline underline-offset-4 hover:text-gray-700 transition-colors'>
-          {isNewUser ? "Log In" : "Create One"}
+      {/* Toggle Button */}
+      <div className="mt-8 text-center text-sm text-slate-400">
+        {isNewUser ? "Already a member? " : "New here? "}
+        <button
+          type="button"
+          onClick={() => setIsNewUser(!isNewUser)}
+          className="text-purple-300 font-bold hover:text-purple-200 transition-colors"
+        >
+          {isNewUser ? "Log In" : "Create one"}
         </button>
       </div>
-
     </div>
-  )
+  );
 }
